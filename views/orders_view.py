@@ -77,3 +77,20 @@ def create_order(order_data):
         new_order_id = db_cursor.lastrowid
 
     return new_order_id if new_order_id is not None else None
+
+
+def delete_order(pk):
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query for the order delete
+        db_cursor.execute(
+            """
+        DELETE FROM Orders WHERE id = ?
+        """,
+            (pk,),
+        )
+        number_of_rows_deleted = db_cursor.rowcount
+
+    return True if number_of_rows_deleted > 0 else False
