@@ -58,3 +58,22 @@ def get_single_order(pk):
         serialized_orders = json.dumps(dict(query_results))
 
     return serialized_orders
+
+
+def create_order(order_data):
+    # Open a connection to the database
+    with sqlite3.connect("./kneeldiamonds.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        # SQL query for all the orders
+        db_cursor.execute(
+            """
+        INSERT INTO Orders (metal_id, size_id, style_id)
+        VALUES (?, ?, ?)
+        """,
+            (order_data["metal_id"], order_data["size_id"], order_data["style_id"]),
+        )
+
+        new_order_id = db_cursor.lastrowid
+
+    return new_order_id if new_order_id is not None else None
