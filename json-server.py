@@ -2,7 +2,7 @@ import json
 from http.server import HTTPServer
 from nss_handler import HandleRequests, status
 
-from views import get_all_orders
+from views import get_all_orders, get_single_order
 
 
 class JSONServer(HandleRequests):
@@ -15,7 +15,10 @@ class JSONServer(HandleRequests):
         url = self.parse_url(self.path)
 
         if url["requested_resource"] == "orders":
-
+            if url["pk"] != 0:
+                response_body = get_single_order(url["pk"])
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+            
             response_body = get_all_orders()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
