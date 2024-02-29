@@ -17,15 +17,23 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "orders":
             if url["pk"] != 0:
-                response_body = get_single_order(url["pk"])
-                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+                try:
+                    response_body = get_single_order(url["pk"])
+                    return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+                except TypeError:
+                    return self.response(
+                        f"Order with id {url['pk']} not found",
+                        status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
+                    )
 
             response_body = get_all_orders()
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
         else:
             return self.response(
-                "", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
+                "Requested resource not found",
+                status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
             )
 
     def do_POST(self):
@@ -40,9 +48,18 @@ class JSONServer(HandleRequests):
         request_body = json.loads(request_body)
 
         if url["requested_resource"] == "orders":
-            new_order_id = create_order(request_body)
-            if new_order_id is not None:
-                return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            try:
+                new_order_id = create_order(request_body)
+                if new_order_id is not None:
+                    return self.response(
+                        "",
+                        status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value,
+                    )
+            except KeyError:
+                return self.response(
+                    "Error creating order: Invalid data format. Need a metal_id, style_id, and size_id",
+                    status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
+                )
 
         return self.response(
             "Requested resource not found",
@@ -63,14 +80,11 @@ class JSONServer(HandleRequests):
                         "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
                     )
 
-                return self.response(
-                    "Requested resource not found",
-                    status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
-                )
-        else:
-            return self.response(
-                "Not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value
-            )
+        # If the requested resource is not "orders" or pk is 0 not created
+        return self.response(
+            "Requested resource not found",
+            status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
+        )
 
     def do_PUT(self):
         """Handle PUT requests from a client"""
@@ -86,12 +100,20 @@ class JSONServer(HandleRequests):
 
         if url["requested_resource"] == "metals":
             if pk != 0:
-                successfully_updated = update_metal(pk, request_body)
-                if successfully_updated:
+                try:
+                    successfully_updated = update_metal(pk, request_body)
+                    if successfully_updated:
+                        return self.response(
+                            "",
+                            status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value,
+                        )
+                except KeyError:
                     return self.response(
-                        "", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value
+                        "Error updating metal: Invalid data format. Need a name and price",
+                        status.HTTP_400_CLIENT_ERROR_BAD_REQUEST_DATA.value,
                     )
 
+        # If the requested resource is not "orders" or pk is 0 not created
         return self.response(
             "Requested resource not found",
             status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value,
