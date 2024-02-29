@@ -39,6 +39,7 @@ CREATE TABLE `Orders`
     `metal_id` INTEGER NOT NULL,
     `size_id` INTEGER NOT NULL,
     `style_id` INTEGER NOT NULL,
+    `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(`metal_id`) REFERENCES `Metals`(`id`),
     FOREIGN KEY(`size_id`) REFERENCES `Sizes`(`id`),
     FOREIGN KEY(`style_id`) REFERENCES `Styles`(`id`)
@@ -64,9 +65,9 @@ INSERT INTO `Metals`  VALUES (NULL, 'Platinum', 795.45);
 INSERT INTO `Metals`  VALUES (NULL, 'Palladium', 1241);
 
 -- Insert statements for Orders
-INSERT INTO `Orders`  VALUES (NULL, 1, 2, 1);
-INSERT INTO `Orders`  VALUES (NULL, 3, 5, 3);
-INSERT INTO `Orders`  VALUES (NULL, 4, 1, 2);
-INSERT INTO `Orders`  VALUES (NULL, 2, 3, 3);
-INSERT INTO `Orders`  VALUES (NULL, 5, 4, 2);
+INSERT INTO `Orders`  VALUES (NULL, 1, 2, 1, "2023-03-15 12:30:45");
+INSERT INTO `Orders`  VALUES (NULL, 3, 5, 3, "2023-04-02 18:20:00");
+INSERT INTO `Orders`  VALUES (NULL, 4, 1, 2, "2023-05-07 08:45:22");
+INSERT INTO `Orders`  VALUES (NULL, 2, 3, 3, "2023-06-20 21:15:10");
+INSERT INTO `Orders`  VALUES (NULL, 5, 4, 2, "2023-07-12 03:40:55");
 -- End block

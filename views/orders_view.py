@@ -15,7 +15,8 @@ def get_all_orders():
             o.id,
             o.metal_id,
             o.size_id,
-            o.style_id
+            o.style_id,
+            o.timestamp
         FROM Orders o
         """
         )
@@ -46,7 +47,8 @@ def get_single_order(pk):
             o.id,
             o.metal_id,
             o.size_id,
-            o.style_id
+            o.style_id,
+            o.timestamp
         FROM Orders o
         WHERE o.id = ?
         """,
